@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PokemonListComponent } from './pokemon-list.component';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('PokemonListComponent', () => {
   let component: PokemonListComponent;
@@ -8,7 +9,8 @@ describe('PokemonListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PokemonListComponent]
+      imports: [PokemonListComponent],
+      providers: [provideHttpClient()]
     })
     .compileComponents();
 
