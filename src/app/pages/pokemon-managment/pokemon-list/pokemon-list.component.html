@@ -1,0 +1,18 @@
+<main class="m-4 lg:m-8">
+   <div class="flex flex-wrap justify-between gap-4 mb-4">
+      <h1 class="text-2xl font-semibold mb-4">Pokemons</h1>
+
+      <form [formGroup]="form">
+         <input pInputText formControlName="name" type="text" >
+      </form>
+   </div>
+
+   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      @for(pokemon of filterPokemons$ | async; track pokemon.id){
+         <app-pokemon-card
+            [pokemon]="pokemon"
+            (toggleFavorite)="onToggleFavorite($event)"
+         />
+      }
+   </div>
+</main>
