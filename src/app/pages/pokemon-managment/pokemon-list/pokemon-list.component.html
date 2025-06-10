@@ -1,1 +1,3 @@
-<p>pokemon-list works!</p>
+@for(pokemon of pokemons$ | async; track pokemon.id){
+   <p>{{ pokemon.name }}</p>
+}

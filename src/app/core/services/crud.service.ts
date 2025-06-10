@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+
 export class CrudService<T> {
   protected readonly http = inject(HttpClient);
   protected readonly apiUrl: string;
@@ -11,7 +12,7 @@ export class CrudService<T> {
     protected readonly path: string,
     protected readonly baseUrl: string = environment.baseUrl
   ) {
-    this.apiUrl = `${this.baseUrl}${this.path}`;
+    this.apiUrl = `${this.baseUrl}${this.path}`
   }
 
   public create(resource: Partial<T>): Observable<T> {
@@ -27,8 +28,8 @@ export class CrudService<T> {
     return this.http.get<T>(`${this.apiUrl}/${id}`);
   }
 
-  public update(resource: Partial<T>): Observable<T> {
-    return this.http.put<T>(`${this.apiUrl}/1`, resource);
+  public update(id: number | string, resource: Partial<T>): Observable<T> {
+    return this.http.put<T>(`${this.apiUrl}/${id}`, resource);
   }
 
   public delete(id: number | string): Observable<void> {
