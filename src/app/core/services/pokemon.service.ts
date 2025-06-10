@@ -1,12 +1,14 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, forkJoin, map, Observable, switchMap, tap } from "rxjs";
 import { Pokemon, PokemonDetails, PokemonCustomDetails, PokemonSummary } from "../../models/pokemon";
 import { CrudService } from "./crud.service";
+import { LocalStorageService } from "../../shared/services/local-storage.service";
 
 @Injectable({
    providedIn: 'root'
 })
 export class PokemonService extends CrudService<PokemonDetails> {
+   localStorageService = inject(LocalStorageService)
 
    constructor(){
       super("/pokemon")
@@ -27,6 +29,7 @@ export class PokemonService extends CrudService<PokemonDetails> {
          p.id === pokemonId ? { ...p, favorite: !p.favorite } : p
       );
       this.setPokemons(updatedValue);
+      this.localStorageService.setItem("pokemons_updated", updatedValue);
    }
 
    getPokemonsDetails(): Observable<PokemonCustomDetails[]> {

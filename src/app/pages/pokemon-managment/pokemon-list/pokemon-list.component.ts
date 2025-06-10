@@ -5,8 +5,9 @@ import { ToastService } from '../../../shared/services/toast.service';
 import { CommonModule } from '@angular/common';
 import { PokemonCardComponent } from "../pokemon-card/pokemon-card.component";
 import { InputTextModule } from 'primeng/inputtext';
-import { debounceTime, distinctUntilChanged, map, Observable, startWith, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, Observable, of, startWith, switchMap } from 'rxjs';
 import { PokemonCustomDetails } from '../../../models/pokemon';
+import { LocalStorageService } from '../../../shared/services/local-storage.service';
 
 @Component({
   selector: 'app-pokemon-list',
@@ -18,6 +19,7 @@ export class PokemonListComponent implements OnInit {
   private pokemonService = inject(PokemonService)
   private toastService = inject(ToastService)
   private formBuilder = inject(FormBuilder)
+  localStorageService = inject(LocalStorageService)
   pokemons$ = this.pokemonService.pokemons$;
   filterPokemons$!: Observable<PokemonCustomDetails[]>;
   form!: FormGroup
@@ -25,7 +27,12 @@ export class PokemonListComponent implements OnInit {
   constructor(){}
 
   ngOnInit(): void {
-    this.listenPokemons();
+    if(navigator.onLine) {
+      this.listenPokemons();
+    } else {
+      this.pokemons$ = of(this.localStorageService.getItem("pokemons") || []);
+    }
+
     this.createForm();
     this.initFilter();
   }

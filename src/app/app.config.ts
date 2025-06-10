@@ -1,17 +1,15 @@
-import { ApplicationConfig, provideZoneChangeDetection, isDevMode } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideAnimations } from "@angular/platform-browser/animations";
 import { provideServiceWorker } from '@angular/service-worker';
-
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
-
 import { providePrimeNG } from 'primeng/config';
 import { AuraCustom } from './shared/styles/aura-custom';
-
 import { routes } from './app.routes';
 import { httpInterceptor } from './core/interceptor/http.interceptor';
 import { ConfirmationService } from 'primeng/api';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -40,12 +38,9 @@ export const appConfig: ApplicationConfig = {
       }
     }),
     provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
+      enabled: environment.production,
       registrationStrategy: 'registerWhenStable:30000'
     }),
-    ConfirmationService, provideServiceWorker('ngsw-worker.js', {
-            enabled: !isDevMode(),
-            registrationStrategy: 'registerWhenStable:30000'
-          }),
+    ConfirmationService
   ]
 };

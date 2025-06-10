@@ -26,5 +26,19 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-pokemons",
+      "urls": [
+        "https://pokeapi.co/api/v2/pokemon/**"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 100,
+        "maxAge": "6h",
+        "timeout": "5s"
+      }
+    }
   ]
 }
