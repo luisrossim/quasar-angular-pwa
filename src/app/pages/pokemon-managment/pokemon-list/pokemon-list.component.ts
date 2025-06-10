@@ -1,34 +1,68 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { PokemonService } from '../../../core/services/pokemon.service';
-import { PokemonCustomDetails } from '../../../models/pokemon';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastService } from '../../../shared/services/toast.service';
 import { CommonModule } from '@angular/common';
-import { catchError, Observable, of } from 'rxjs';
+import { PokemonCardComponent } from "../pokemon-card/pokemon-card.component";
+import { InputTextModule } from 'primeng/inputtext';
+import { debounceTime, distinctUntilChanged, map, Observable, startWith, switchMap } from 'rxjs';
+import { PokemonCustomDetails } from '../../../models/pokemon';
 
 @Component({
   selector: 'app-pokemon-list',
-  imports: [CommonModule],
+  imports: [CommonModule, PokemonCardComponent, ReactiveFormsModule, InputTextModule],
   templateUrl: './pokemon-list.component.html',
   styleUrl: './pokemon-list.component.css'
 })
 export class PokemonListComponent implements OnInit {
   private pokemonService = inject(PokemonService)
   private toastService = inject(ToastService)
-  pokemons$: Observable<PokemonCustomDetails[]> = of([])
+  private formBuilder = inject(FormBuilder)
+  pokemons$ = this.pokemonService.pokemons$;
+  filterPokemons$!: Observable<PokemonCustomDetails[]>;
+  form!: FormGroup
 
   constructor(){}
 
   ngOnInit(): void {
-    this.loadPokemons();
+    this.listenPokemons();
+    this.createForm();
+    this.initFilter();
   }
 
-  private loadPokemons(){
-    this.pokemons$ = this.pokemonService.getPokemonsDetails().pipe(
-      catchError((err) => {
-          this.toastService.error("Erro ao buscar pokemons");
-          console.log(err)
-          return of([])
-        })
-    )
+  private listenPokemons(){
+    this.pokemonService.getPokemonsDetails().subscribe({
+      error: (err) => {
+        console.log(err)
+        this.toastService.error("Erro ao buscar pokemon")
+      }
+    })
+  }
+
+  onToggleFavorite(pokemonId: number) {
+    this.pokemonService.favorite(pokemonId)
+  }
+
+  createForm(){
+    this.form = this.formBuilder.group({
+      name: ["", [Validators.required, Validators.minLength(2)]]
+    })
+  }
+
+  initFilter() {
+    this.filterPokemons$ = this.form.get('name')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(search =>
+        this.pokemons$.pipe(
+          map(pokemons =>
+            pokemons.filter(p =>
+              p.name.toLowerCase().startsWith(search.toLowerCase())
+            )
+          )
+        )
+      )
+    );
   }
 }
